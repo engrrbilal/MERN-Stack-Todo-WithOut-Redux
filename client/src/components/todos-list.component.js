@@ -4,8 +4,8 @@ import * as todos from '../apis/todos'
 
 const Todo = props => (
     <tr>
-        <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_description}</td>
-        <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_responsible}</td>
+        <td className={props.todo.todo_completed ? 'completed textLimit' : 'textLimit'}>{props.todo.todo_description}</td>
+        <td className={props.todo.todo_completed ? 'completed textLimit' : 'textLimit'}>{props.todo.todo_responsible}</td>
         <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_priority}</td>
         <td>
             <Link to={"/edit/"+props.todo._id}>Edit</Link>
@@ -22,6 +22,7 @@ export default class TodosList extends Component {
 
     componentDidMount() {
         todos.getAll().then(data=> {
+            console.log("data",data)
             this.setState({todos: data});
         })
     }
@@ -52,7 +53,7 @@ export default class TodosList extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        { this.todoList() }
+                        { this.state.todos.length ? this.todoList(): <p className = "defaultTextStyle" >No todos added yet</p> }
                     </tbody>
                 </table>
             </div>

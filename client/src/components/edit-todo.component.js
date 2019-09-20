@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import * as todos from '../apis/todos'
 
 export default class EditTodo extends Component {
 
@@ -21,17 +21,18 @@ export default class EditTodo extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/todos/'+this.props.match.params.id)
+        todos.getWithId(this.props.match.params.id)
             .then(response => {
+                console.log("response: ",response);
                 this.setState({
-                    todo_description: response.data.todo_description,
-                    todo_responsible: response.data.todo_responsible,
-                    todo_priority: response.data.todo_priority,
-                    todo_completed: response.data.todo_completed
+                    todo_description: response.todo_description,
+                    todo_responsible: response.todo_responsible,
+                    todo_priority: response.todo_priority,
+                    todo_completed: response.todo_completed
                 })
             })
-            .catch(function(error) {
-                console.log(error)
+            .catch((error) =>{
+                console.log("error while getting todo: ",error)
             })
     }
 
@@ -58,96 +59,115 @@ export default class EditTodo extends Component {
             todo_completed: !this.state.todo_completed
         });
     }
+    deleteTodo(){
+        todos.deleteWithId(this.props.match.params.id)
+        .then(res => {
+            console.log(res.data);
+            if(res){
+                alert("Todo has been deleted successfully!")
+                this.props.history.push('/')
+            } else {
+                alert("Server error while deleting todo");
+            }
+        });
+    }
 
     onSubmit(e) {
         e.preventDefault();
-        const obj = {
+        const todoToUpdate = {
             todo_description: this.state.todo_description,
             todo_responsible: this.state.todo_responsible,
             todo_priority: this.state.todo_priority,
             todo_completed: this.state.todo_completed
         };
-        axios.post('http://localhost:4000/api/todos'+this.props.match.params.id, obj)
-            .then(res => console.log(res.data));
-
-        this.props.history.push('/');
+        todos.update(this.props.match.params.id,todoToUpdate)
+        .then(res => {
+            console.log("res",res);
+            if(res){
+                alert("Todo has been updated successfully!")
+                this.props.history.push('/')
+            } else {
+                alert("Server error while updating todo");
+            }
+        });
     }
 
     render() {
         return (
             <div>
-                <h3>Update Todo</h3>
-                <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                        <label>Description: </label>
-                        <input  type="text"
-                                className="form-control"
-                                value={this.state.todo_description}
-                                onChange={this.onChangeTodoDescription}
+            <h3>Update Todo</h3>
+            <form onSubmit={this.onSubmit}>
+                <div className="form-group">
+                    <label>Description: </label>
+                    <input  type="text"
+                            className="form-control"
+                            value={this.state.todo_description}
+                            onChange={this.onChangeTodoDescription}
+                            />
+                </div>
+                <div className="form-group">
+                    <label>Responsible: </label>
+                    <input  type="text"
+                            className="form-control"
+                            value={this.state.todo_responsible}
+                            onChange={this.onChangeTodoResponsible}
+                            />
+                </div>
+                <div className="form-group">
+                    <div className="form-check form-check-inline">
+                        <input  className="form-check-input"
+                                type="radio"
+                                name="priorityOptions"
+                                id="priorityLow"
+                                value="low"
+                                checked={this.state.todo_priority==='low'}
+                                onChange={this.onChangeTodoPriority}
                                 />
+                        <label className="form-check-label">Low</label>
                     </div>
-                    <div className="form-group">
-                        <label>Responsible: </label>
-                        <input  type="text"
-                                className="form-control"
-                                value={this.state.todo_responsible}
-                                onChange={this.onChangeTodoResponsible}
+                    <div className="form-check form-check-inline">
+                        <input  className="form-check-input"
+                                type="radio"
+                                name="priorityOptions"
+                                id="priorityMedium"
+                                value="medium"
+                                checked={this.state.todo_priority==='medium'}
+                                onChange={this.onChangeTodoPriority}
                                 />
+                        <label className="form-check-label">Medium</label>
                     </div>
+                    <div className="form-check form-check-inline">
+                        <input  className="form-check-input"
+                                type="radio"
+                                name="priorityOptions"
+                                id="priorityHigh"
+                                value="high"
+                                checked={this.state.todo_priority==='high'}
+                                onChange={this.onChangeTodoPriority}
+                                />
+                        <label className="form-check-label">High</label>
+                    </div>
+                    <div className="form-check">
+                        <input  type="checkbox"
+                                className="form-check-input"
+                                id="completedCheckbox"
+                                name="completedCheckbox"
+                                onChange={this.onChangeTodoCompleted}
+                                checked={this.state.todo_completed}
+                                value={this.state.todo_completed}
+                                />
+                        <label className="form-check-label" htmlFor="completedCheckbox">
+                            Completed
+                        </label>
+                    </div>
+                    <br/>
                     <div className="form-group">
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="priorityOptions"
-                                    id="priorityLow"
-                                    value="Low"
-                                    checked={this.state.todo_priority==='Low'}
-                                    onChange={this.onChangeTodoPriority}
-                                    />
-                            <label className="form-check-label">Low</label>
-                        </div>
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="priorityOptions"
-                                    id="priorityMedium"
-                                    value="Medium"
-                                    checked={this.state.todo_priority==='Medium'}
-                                    onChange={this.onChangeTodoPriority}
-                                    />
-                            <label className="form-check-label">Medium</label>
-                        </div>
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="priorityOptions"
-                                    id="priorityHigh"
-                                    value="High"
-                                    checked={this.state.todo_priority==='High'}
-                                    onChange={this.onChangeTodoPriority}
-                                    />
-                            <label className="form-check-label">High</label>
-                        </div>
-                        <div className="form-check">
-                            <input  type="checkbox"
-                                    className="form-check-input"
-                                    id="completedCheckbox"
-                                    name="completedCheckbox"
-                                    onChange={this.onChangeTodoCompleted}
-                                    checked={this.state.todo_completed}
-                                    value={this.state.todo_completed}
-                                    />
-                            <label className="form-check-label" htmlFor="completedCheckbox">
-                                Completed
-                            </label>
-                        </div>
-                        <br/>
-                        <div className="form-group">
-                            <input type="submit" value="Update Todo" className="btn btn-primary" />
-                        </div>
+                        <input type="submit" value="Update Todo" className="btn btn-primary" />
+                        <input type="button" onClick={this.deleteTodo.bind(this)} value="Delete Todo" className="btn btn-danger marginHorizontal" />
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
+        </div>
         )
     }
 }

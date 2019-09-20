@@ -60,7 +60,11 @@ export default class CreateTodo extends Component {
                 todo_priority: '',
                 todo_completed: false
             })
-            this.props.history.push('/');
+            if(res){
+                alert("Todo has been added successfully!");
+            } else {
+                alert("Server error while adding todo");
+            }
         })
     }
 

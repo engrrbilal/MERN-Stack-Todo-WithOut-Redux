@@ -6,13 +6,13 @@ const todoSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 1,
-        maxlength: 100
+        maxlength: 500
     },
     todo_responsible: {
         type: String,
         required: true,
         minlength: 1,
-        maxlength: 100
+        maxlength: 500
     },
     todo_priority: {
         type: String,
@@ -30,8 +30,8 @@ const Todo = mongoose.model('Todo', todoSchema);
 
 function validateTodo(todo) {
     const schema = {
-        todo_description: Joi.string().min(3).max(100).required(),
-        todo_responsible: Joi.string().min(3).max(100).required(),
+        todo_description: Joi.string().min(3).max(500).required(),
+        todo_responsible: Joi.string().min(3).max(500).required(),
         todo_priority: Joi.string().min(3).max(100).required(),
         todo_completed: Joi.boolean().required()
     };

@@ -15,6 +15,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "cors": "^2.8.5",
         "express": "^4.16.2",
         "fawn": "^2.1.5",
         "joi": "^13.7.0",
